@@ -57,10 +57,16 @@ void enableRawMode(){
 char editorReadKey(){
     int nread;
     char c;
-    while((nread = read(STDIN_FILENO, &c 1)) != 1){
+    while((nread = read(STDIN_FILENO, &c, 1)) == -1){
         if(nread == -1 && errno != EAGAIN)
             die("read");
     }
+}
+
+/*** output ***/
+
+void editorRefreshScreen(){
+    write(STDOUT_FILENO, "\x1b[2J", 4);
 }
 
 /*** input ***/
@@ -81,6 +87,7 @@ int main(){
     enableRawMode();
 
     while(1){
+        editorRefreshScreen();
         editorProcessKeypress();
     }
     return 0;
