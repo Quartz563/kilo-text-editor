@@ -20,10 +20,10 @@
 #define CTRL_KEY(k) ((k) & 0x1f)
 
 enum editorKey {
-    ARROW_LEFT = 'a',
-    ARROW_RIGHT = 'd',
-    ARROW_UP = 'w',
-    ARROW_DOWN = 's'
+    ARROW_LEFT = 1000,
+    ARROW_RIGHT,
+    ARROW_UP,
+    ARROW_DOWN
 };
 
 /*** data ***/
@@ -73,7 +73,7 @@ void enableRawMode(){
         die("tcsetattr");
 }
 
-char editorReadKey(){
+int editorReadKey(){
     int nread;
     char c;
     while((nread = read(STDIN_FILENO, &c, 1)) == -1){
@@ -198,17 +198,17 @@ void editorRefreshScreen(){
 
 /*** input ***/
 
-void editorMoveCursor(char key){
+void editorMoveCursor(int key){
     switch(key) {
-        case 'a': E.cx--; break;
-        case 'd': E.cx++; break;
-        case 'w': E.cy--; break;
-        case 's': E.cy++; break;
+        case ARROW_LEFT: E.cx--; break;
+        case ARROW_RIGHT: E.cx++; break;
+        case ARROW_UP: E.cy--; break;
+        case ARROW_DOWN: E.cy++; break;
     }
 }
 
 void editorProcessKeypress(){
-    char c = editorReadKey();
+    int c = editorReadKey();
 
     switch(c) {
         case CTRL_KEY('q'):
@@ -216,10 +216,10 @@ void editorProcessKeypress(){
             write(STDOUT_FILENO, "\x1b[H", 3);
             exit(0);
             break;
-        case 'w':
-        case 's':
-        case 'a':
-        case 'd':
+        case ARROW_UP:
+        case ARROW_DOWN:
+        case ARROW_LEFT:
+        case ARROW_RIGHT:
             editorMoveCursor(c);
             break;
     }
