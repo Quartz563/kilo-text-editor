@@ -76,20 +76,20 @@ int getCursorPosition(int *rows, int *cols){
     unsigned int i = 0;
     if(write(STDOUT_FILENO, "\x1b[6n", 4) != 4)
         return -1;
-    while(i < sizeof(buf)  - 1) {
+    while(i < sizeof(buf) - 1) {
         if(read(STDIN_FILENO, &c, 1) != 1) break;
         if(buf[i] == 'R') break;
         i++;
     }
     buf[i] = '\0';
-    printf("\r\n&buf[1]: '%s'\r\n" &buf[1])
-    editorReadKey();
-    return -1;
+    if(buf[0] != '\x1b' || buf[1] != '[') return -1;
+    if(sscanf(&buf[2], "%d;%d", rows, cols) != 2) return -1;
+    return 0;
 }
 
 int getWindowSize(int *rows, int *cols) {
     struct winsize ws;
-    if(1 || ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0) {
+    if(ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0) {
         if(write(STDOUT_FILENO, "\x1b[999C\xb1[999B", 12) != 12)
             return -1;
         return getCursorPosition(rows, cols);
