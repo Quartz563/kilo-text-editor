@@ -24,6 +24,8 @@ struct editorConfig {
     struct termios orig_termios;
 };
 
+struct editorConfig E;
+
 /*** terminal ***/
 
 void die(const char *s){
@@ -113,8 +115,14 @@ void editorProcessKeypress(){
 
 /*** init ***/
 
+void initEditor() {
+    if(getWindowSize(&E.screenrows, &E.screencols) == -1)
+        die("getWindowSize");
+}
+
 int main(){
     enableRawMode();
+    initEditor();
 
     while(1){
         editorRefreshScreen();
