@@ -1,14 +1,21 @@
 //
 // Created by joseph on 31/01/24.
 //
+#include <stdlib.h>
 #include <unistd.h>
 #include <termio.h>
+
+struct termios orig_termios;
+
+void disableRawMode(){
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
+}
 
 void enableRawMode(){
     struct terminos raw;
     tcgetattr(STDIN_FILENO, &raw);
     raw.c_lflag &= ~(ECHO);
-    tcsetattr(STDIN_FILENO, TCAFLUSH, &raw);
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 }
 
 
