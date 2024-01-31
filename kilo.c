@@ -17,8 +17,9 @@
 
 /*** data ***/
 
-//struct copy of the original terminal settings
-struct termios orig_termios;
+struct editorConfig {
+    struct termios orig_termios;
+};
 
 /*** terminal ***/
 
@@ -31,19 +32,19 @@ void die(const char *s){
 
 void disableRawMode(){
     //apply original terminal settings
-    if(tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios) == -1)
+    if(tcsetattr(STDIN_FILENO, TCSAFLUSH, &E.orig_termios)) == -1)
         die("tcsetattr");
 }
 
 void enableRawMode(){
     //get original terminal settings
-    if(tcgetattr(STDIN_FILENO, &orig_termios) == -1)
+    if(tcgetattr(STDIN_FILENO, &E.orig_termios) == -1)
         die("tcgetattr");
     //set disableRawMode function to execute on program exit
     atexit(disableRawMode);
 
     //create a copy of terminal settings and apply custom flags to enable "raw" mode
-    struct termios raw = orig_termios;
+    struct termios raw = &E.orig_termios);
     raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
     raw.c_oflag &= ~(OPOST);
     raw.c_cflag &= ~(CS8);
